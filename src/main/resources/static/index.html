@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        /* Adicione seu CSS aqui */
+    </style>
+</head>
+
+<body>
+    <h1>To-Do List</h1>
+    <form id="tarefaForm">
+        <input type="text" id="descricao" placeholder="Descrição da Tarefa" required>
+        <button type="submit">Adicionar</button>
+    </form>
+    <ul id="tarefas"></ul>
+
+    <script>
+        async function carregarTarefas() {
+            const response = await fetch('/api/tarefas');
+            const tarefas = await response.json();
+            const listaTarefas = document.getElementById('tarefas');
+            listaTarefas.innerHTML = '';
+            tarefas.forEach(tarefa => {
+                const li = document.createElement('li');
+                li.textContent = tarefa.descricao;
+                listaTarefas.appendChild(li);
+            });
+        }
+
+        document.getElementById('tarefaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const descricao = document.getElementById('descricao').value;
+            await fetch('/api/tarefas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ descricao, concluida: false })
+            });
+            document.getElementById('descricao').value = '';
+            carregarTarefas();
+        });
+
+        carregarTarefas();
+    </script>
+</body>
+
+</html>
